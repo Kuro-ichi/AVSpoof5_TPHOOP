@@ -1,0 +1,53 @@
+# Default config for ASVspoof5 TPH-OP
+seed: 1337
+task: cm        # cm or sasv
+mode: train     # train or eval
+device: auto
+log_dir: runs
+
+data:
+  root: /path/to/data
+  train_split: train
+  dev_split: dev
+  eval_split: eval
+  sample_rate: 16000
+  duration_sec: 6.0
+  batch_size: 32
+  num_workers: 8
+  shuffle: true
+
+model:
+  raw_branch:
+    enabled: true
+    channels: [16, 32, 64]
+  spectro_phase_branch:
+    enabled: true
+    d_model: 128
+    n_layers: 4
+    n_heads: 4
+    mel_bins: 80
+  ssl_branch:
+    enabled: true
+    encoder: torchaudio_wavlm_base    # placeholder id
+    train_last_n_layers: 2
+    proj_dim: 128
+  fusion:
+    hidden: 128
+  ocp:
+    enabled: true
+    feat_dim: 192                     # match fusion output dim
+    momentum: 0.99
+
+optim:
+  lr: 2.0e-4
+  weight_decay: 1.0e-4
+  max_epochs: 30
+  warmup_epochs: 2
+
+loss:
+  bce_weight: 1.0
+  supcon_weight: 0.1                  # set 0 to disable
+  ocp_weight: 0.2
+
+eval:
+  metrics: [eer, min_tdcf]
